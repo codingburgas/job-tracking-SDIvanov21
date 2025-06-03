@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobTracking.API", "JobTracking.API\JobTracking.API.csproj", "{45A987C2-D7F7-4918-BF09-AFD9082D55D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobTracking.API", "JobTracking.API\JobTracking.API.csproj", "{76629E9D-1D43-4948-A7CE-EEDE7C4E8C86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobTracking.Application", "JobTracking.Application\JobTracking.Application.csproj", "{10C86328-3362-41AE-9667-592018A85C29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobTracking.DataAccess", "JobTracking.DataAccess\JobTracking.DataAccess.csproj", "{855366A3-F5A4-4317-9EAA-71D016FF54DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobTracking.Domain", "JobTracking.Domain\JobTracking.Domain.csproj", "{F37C4036-F82B-41C7-9558-F05B11C40A39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{45A987C2-D7F7-4918-BF09-AFD9082D55D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45A987C2-D7F7-4918-BF09-AFD9082D55D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45A987C2-D7F7-4918-BF09-AFD9082D55D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C86328-3362-41AE-9667-592018A85C29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C86328-3362-41AE-9667-592018A85C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C86328-3362-41AE-9667-592018A85C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C86328-3362-41AE-9667-592018A85C29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{855366A3-F5A4-4317-9EAA-71D016FF54DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{855366A3-F5A4-4317-9EAA-71D016FF54DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{855366A3-F5A4-4317-9EAA-71D016FF54DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{855366A3-F5A4-4317-9EAA-71D016FF54DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F37C4036-F82B-41C7-9558-F05B11C40A39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37C4036-F82B-41C7-9558-F05B11C40A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37C4036-F82B-41C7-9558-F05B11C40A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37C4036-F82B-41C7-9558-F05B11C40A39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

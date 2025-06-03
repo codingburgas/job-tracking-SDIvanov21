@@ -1,6 +1,6 @@
 ﻿namespace JobTracking.DataAccess.Data.Base
 {
-    public interface IEntity
+    public abstract class Entity
     {
         public int Id { get; set; }
         public bool IsActive { get; set; }
