@@ -1,4 +1,6 @@
 ﻿using JobTracking.DataAccess.Data.Base;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JobTracking.DataAccess.Models;
 
@@ -23,4 +25,14 @@ public class User : IEntity
     public string Role { get; set; }
 
     public List<Application> Applications { get; set; } = [];
+}
+
+public class UserTypeConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        builder.HasKey(e => e.Id);
+        builder.HasMany(e => e.Applications)
+            .WithOne(e => e.Applicant);
+    }
 }

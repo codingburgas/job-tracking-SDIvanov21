@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\JobTracking.Application\JobTracking.Application.csproj" />
     <ProjectReference Include="..\JobTracking.DataAccess\JobTracking.DataAccess.csproj" />
     <ProjectReference Include="..\JobTracking.Domain\JobTracking.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
 </Project>
