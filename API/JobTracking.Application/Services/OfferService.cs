@@ -1,7 +1,8 @@
-﻿using JobTracking.DataAccess.Models;
+﻿using JobTracking.DataAccess.Data;
+using JobTracking.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace JobTracking.Services
+namespace JobTracking.Application.Services
 {
     public interface IOfferService
     {
@@ -14,9 +15,9 @@ namespace JobTracking.Services
 
     public class OfferService : IOfferService
     {
-        private readonly DbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public OfferService(DbContext context)
+        public OfferService(ApplicationDbContext context)
         {
             _context = context;
         }

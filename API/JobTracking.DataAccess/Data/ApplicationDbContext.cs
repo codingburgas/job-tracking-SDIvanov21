@@ -5,13 +5,13 @@ namespace JobTracking.DataAccess.Data;
 
 public class ApplicationDbContext : DbContext
 {
-    ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
         
     }
     
-    DbSet<Application> Applications { get; set; }
-    DbSet<Offer> Offers { get; set; }
-    DbSet<User> Users { get; set; }
+    public DbSet<Application> Applications { get; set; }
+    public DbSet<Offer> Offers { get; set; }
+    public DbSet<User> Users { get; set; }
 }
