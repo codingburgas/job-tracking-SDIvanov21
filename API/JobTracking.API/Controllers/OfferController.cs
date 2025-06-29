@@ -1,4 +1,5 @@
-﻿using JobTracking.DataAccess.Models;
+﻿using Offer = JobTracking.DataAccess.Models.Offer;
+using OfferDTO = JobTracking.Domain.DTOs.Offer;
 using JobTracking.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,20 +33,23 @@ namespace JobTracking.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Offer offer)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] OfferDTO offer)
         {
-            var created = await _offerService.CreateOfferAsync(offer);
+            var created = await _offerService.CreateOfferAsync(offer, User.Identity?.Name!);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Offer offer)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] OfferDTO offer)
         {
-            var updated = await _offerService.UpdateOfferAsync(id, offer);
+            var updated = await _offerService.UpdateOfferAsync(id, offer, User.Identity?.Name!);
             return updated == null ? NotFound() : Ok(User.Identity?.Name!);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var success = await _offerService.DeleteOfferAsync(id);

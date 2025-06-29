@@ -1,5 +1,7 @@
 ﻿using JobTracking.DataAccess.Data;
 using JobTracking.DataAccess.Models;
+using Offer = JobTracking.DataAccess.Models.Offer;
+using OfferDTO = JobTracking.Domain.DTOs.Offer;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobTracking.Application.Services
@@ -8,8 +10,8 @@ namespace JobTracking.Application.Services
     {
         Task<List<Offer>> GetAllOffersAsync();
         Task<Offer?> GetOfferByIdAsync(int id);
-        Task<Offer> CreateOfferAsync(Offer offer);
-        Task<Offer?> UpdateOfferAsync(int id, Offer updatedOffer);
+        Task<Offer> CreateOfferAsync(OfferDTO offer, string username);
+        Task<Offer?> UpdateOfferAsync(int id, OfferDTO updatedOffer, string username);
         Task<bool> DeleteOfferAsync(int id);
     }
 
@@ -36,21 +38,31 @@ namespace JobTracking.Application.Services
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<Offer> CreateOfferAsync(Offer offer)
+        public async Task<Offer> CreateOfferAsync(OfferDTO offer, string username)
         {
-            offer.CreatedOn = DateTime.UtcNow;
-            _context.Set<Offer>().Add(offer);
+            var newOffer = new Offer
+            {
+                CreatedOn = DateTime.Now,
+                CreatedBy = username,
+                IsActive = true,
+                Company = offer.Company,
+                Description = offer.Description,
+                Job = offer.Job,
+                Status = offer.Status
+            };
+            
+            _context.Set<Offer>().Add(newOffer);
             await _context.SaveChangesAsync();
-            return offer;
+            return newOffer;
         }
 
-        public async Task<Offer?> UpdateOfferAsync(int id, Offer updatedOffer)
+        public async Task<Offer?> UpdateOfferAsync(int id, OfferDTO updatedOffer, string username)
         {
             var existing = await _context.Set<Offer>().FindAsync(id);
             if (existing == null) return null;
 
             existing.UpdatedOn = DateTime.UtcNow;
-            existing.UpdatedBy = updatedOffer.UpdatedBy;
+            existing.UpdatedBy = username;
             existing.Status = updatedOffer.Status;
             existing.Description = updatedOffer.Description;
             existing.Job = updatedOffer.Job;

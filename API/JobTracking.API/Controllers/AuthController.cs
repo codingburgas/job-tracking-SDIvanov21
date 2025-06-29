@@ -1,4 +1,5 @@
 ﻿using JobTracking.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using LoginRequest = JobTracking.Domain.DTOs.LoginRequest;
@@ -25,7 +26,7 @@ public class AuthController : ControllerBase
         if (!result.Success)
             return Unauthorized(result.Message);
 
-        var token = _authService.GenerateToken(loginDto.Username);
+        var token = _authService.GenerateToken(result.User!.Username, result.User!.Role);
         return Ok(new { token }); // or return token later
     } 
     
@@ -33,6 +34,18 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest userDto)
     {
         var result = await _authService.RegisterUserAsync(userDto);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    } 
+    
+    //[Authorize( Roles = "Admin" )]
+    [HttpPost("admin/register")]
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRequest userDto)
+    {
+        var result = await _authService.RegisterUserAsync(userDto, true);
 
         if (!result.Success)
             return BadRequest(result.Message);

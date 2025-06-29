@@ -15,9 +15,9 @@ namespace JobTracking.Application.Services;
 
 public interface IAuthService
 {
-    string GenerateToken(string username);
-    public Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto);
-    public Task<(bool Success, string Message)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto);
+    string GenerateToken(string username, string role);
+    public Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto, bool admin = false);
+    public Task<(bool Success, string Message, User? User)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto);
 }
 
 public class AuthService : IAuthService
@@ -33,7 +33,7 @@ public class AuthService : IAuthService
         _passwordHasher = passwordHasher;
     }
 
-    public string GenerateToken(string username)
+    public string GenerateToken(string username, string role)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_settings.SecretKey);
@@ -41,8 +41,8 @@ public class AuthService : IAuthService
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity([
-                new Claim(ClaimTypes.Name, username)
-                // Add other claims here if needed
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, role)
             ]),
             Expires = DateTime.UtcNow.AddMinutes(_settings.ExpiryMinutes),
             Issuer = _settings.Issuer,
@@ -56,21 +56,21 @@ public class AuthService : IAuthService
         return tokenHandler.WriteToken(token);
     }
     
-    public async Task<(bool Success, string Message)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto)
+    public async Task<(bool Success, string Message, User? User)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto)
     {
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Username == loginDto.Username);
 
         if (user == null || _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password) != PasswordVerificationResult.Success)
-            return (false, "Invalid username or password.");
+            return (false, "Invalid username or password.", null);
 
         if (!user.IsActive)
-            return (false, "User account is inactive.");
+            return (false, "User account is inactive.", null);
 
-        return (true, "");
+        return (true, "",  user);
     } 
     
-    public async Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto)
+    public async Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto, bool admin = false)
     {
         // Check if user already exists
         var existingUser = await _dbContext.Users
@@ -85,7 +85,7 @@ public class AuthService : IAuthService
             Surname = userDto.Surname,
             LastName = userDto.LastName,
             Username = userDto.Username,
-            Role = userDto.Role,
+            Role = admin ? "Admin" : "User",
             IsActive = true,
             CreatedOn = DateTime.UtcNow,
             CreatedBy = "System"
