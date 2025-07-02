@@ -20,4 +20,20 @@ export class ApplicationService {
       catchError(err => throwError(() => err.error?.error || 'Failed to apply'))
     );
   }
+
+  getUserApplications(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/for-user/${userId}`).pipe(
+      catchError(err => throwError(() => err.error?.error || 'Failed to fetch applications'))
+    );
+  }
+
+  getApplicationsForOffer(offerId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/for-offer/${offerId}`);
+  }
+
+  updateApplicationStatus(id: number, status: number): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status }).pipe(
+      catchError(err => throwError(() => err.error?.error || 'Failed to update status'))
+    );
+  }
 } 

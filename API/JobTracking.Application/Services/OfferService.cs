@@ -1,5 +1,6 @@
 ﻿using JobTracking.DataAccess.Data;
 using JobTracking.DataAccess.Models;
+using JobTracking.Domain.Enums;
 using Offer = JobTracking.DataAccess.Models.Offer;
 using OfferDTO = JobTracking.Domain.DTOs.Offer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace JobTracking.Application.Services
         Task<Offer> CreateOfferAsync(OfferDTO offer, string username);
         Task<Offer?> UpdateOfferAsync(int id, OfferDTO updatedOffer, string username);
         Task<bool> DeleteOfferAsync(int id);
+        Task<(bool Success, string Message)> UpdateOfferStatusAsync(int id, OfferStatusEnum status);
     }
 
     public class OfferService : IOfferService
@@ -118,6 +120,26 @@ namespace JobTracking.Application.Services
             {
                 _logger.LogError(ex, $"Error deleting offer with id {id}");
                 return false;
+            }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateOfferStatusAsync(int id, OfferStatusEnum status)
+        {
+            try
+            {
+                var offer = await _context.Set<Offer>().FindAsync(id);
+                if (offer == null)
+                    return (false, "Offer not found.");
+                offer.Status = status;
+                offer.UpdatedOn = DateTime.UtcNow;
+                offer.UpdatedBy = "Admin";
+                await _context.SaveChangesAsync();
+                return (true, "Offer status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                return (false, "An error occurred while updating the offer status.");
             }
         }
     }

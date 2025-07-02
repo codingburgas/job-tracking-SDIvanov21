@@ -14,4 +14,18 @@ export class OfferService {
       catchError(err => throwError(() => err.error?.error || 'Failed to load offers'))
     );
   }
+
+  getOfferById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  updateOfferStatus(id: number, status: number): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status });
+  }
+
+  createOffer(offer: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}`, offer).pipe(
+      catchError(err => throwError(() => err.error?.error || 'Failed to create offer'))
+    );
+  }
 } 

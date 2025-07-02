@@ -4,6 +4,7 @@ using JobTracking.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using JobTracking.Domain.DTOs;
 
 namespace JobTracking.API.Controllers
 {
@@ -100,6 +101,25 @@ namespace JobTracking.API.Controllers
             {
                 _logger.LogError(ex, $"Error deleting offer with id {id}");
                 throw;
+            }
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOfferStatusRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            try
+            {
+                var result = await _offerService.UpdateOfferStatusAsync(id, request.Status);
+                if (!result.Success)
+                    return BadRequest(result.Message);
+                return Ok(new { message = result.Message });
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                return StatusCode(500, "An error occurred while updating the offer status.");
             }
         }
     }

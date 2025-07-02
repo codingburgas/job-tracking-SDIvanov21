@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ApplicationDTO = JobTracking.Domain.DTOs.Application;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using JobTracking.Domain.Enums;
 
 namespace JobTracking.API.Controllers;
 
@@ -88,11 +89,44 @@ public class ApplicationController : ControllerBase
         try
         {
             var applications = await _applicationService.GetApplicationsByUserIdAsync(userId);
-            return Ok(applications);
+            var offerIds = applications.Select(a => a.Offer.Id).ToList();
+            return Ok(offerIds);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error getting applications for user {userId}");
+            throw;
+        }
+    }
+
+    [HttpGet("for-offer/{offerId}")]
+    public async Task<IActionResult> GetForOffer(int offerId)
+    {
+        try
+        {
+            var applications = await _applicationService.GetApplicationsByOfferIdAsync(offerId);
+            return Ok(applications);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error getting applications for offer {offerId}");
+            throw;
+        }
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] JobTracking.Domain.DTOs.ApplicationStatus status)
+    {
+        try
+        {
+            var result = await _applicationService.UpdateApplicationStatusAsync(id, status.Status);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(new { message = result.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating application status for id {id}");
             throw;
         }
     }
