@@ -51,5 +51,5 @@ public class AuthController : ControllerBase
             return BadRequest(result.Message);
 
         return Ok(result.Message);
-    } 
+    }
 }

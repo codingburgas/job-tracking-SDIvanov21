@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using JobTracking.DataAccess.Data;
 using JobTracking.DataAccess.Models;
-using JobTracking.Domain.DTOs;
+using DTOs = JobTracking.Domain.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -16,17 +16,17 @@ namespace JobTracking.Application.Services;
 public interface IAuthService
 {
     string GenerateToken(string username, string role);
-    public Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto, bool admin = false);
+    public Task<(bool Success, string Message)> RegisterUserAsync(DTOs.RegisterRequest userDto, bool admin = false);
     public Task<(bool Success, string Message, User? User)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto);
 }
 
 public class AuthService : IAuthService
 {
-    private readonly JwtSettings _settings;
+    private readonly DTOs.JwtSettings _settings;
     private readonly ApplicationDbContext _dbContext;
     private readonly IPasswordHasher<User> _passwordHasher;
 
-    public AuthService(ApplicationDbContext dbContext, IOptions<JwtSettings> options, IPasswordHasher<User> passwordHasher)
+    public AuthService(ApplicationDbContext dbContext, IOptions<DTOs.JwtSettings> options, IPasswordHasher<User> passwordHasher)
     {
         _settings = options.Value;
         _dbContext = dbContext;
@@ -56,7 +56,7 @@ public class AuthService : IAuthService
         return tokenHandler.WriteToken(token);
     }
     
-    public async Task<(bool Success, string Message, User? User)> LoginUserAsync(JobTracking.Domain.DTOs.LoginRequest loginDto)
+    public async Task<(bool Success, string Message, User? User)> LoginUserAsync(DTOs.LoginRequest loginDto)
     {
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Username == loginDto.Username);
@@ -70,7 +70,7 @@ public class AuthService : IAuthService
         return (true, "",  user);
     } 
     
-    public async Task<(bool Success, string Message)> RegisterUserAsync(RegisterRequest userDto, bool admin = false)
+    public async Task<(bool Success, string Message)> RegisterUserAsync(DTOs.RegisterRequest userDto, bool admin = false)
     {
         // Check if user already exists
         var existingUser = await _dbContext.Users

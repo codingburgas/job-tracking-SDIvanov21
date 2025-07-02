@@ -1,4 +1,5 @@
-﻿using JobTracking.DataAccess.Data.Base;
+﻿using System.Text.Json.Serialization;
+using JobTracking.DataAccess.Data.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,6 +25,7 @@ public class User : IEntity
     
     public string Role { get; set; }
 
+    [JsonIgnore]
     public List<Application> Applications { get; set; } = [];
 }
 

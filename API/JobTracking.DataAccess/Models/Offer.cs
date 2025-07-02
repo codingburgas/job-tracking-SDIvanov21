@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JobTracking.DataAccess.Data.Base;
 using JobTracking.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ public class Offer : IEntity
     [Required]
     public string Company { get; set; }
     
+    [JsonIgnore]
     [Required]
     public List<Application> Applications { get; set; } = [];
 }

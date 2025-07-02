@@ -1,7 +1,7 @@
 
 using System.Text;
 using JobTracking.DataAccess.Data;
-using JobTracking.Domain.DTOs;
+using DTOs = JobTracking.Domain.DTOs;
 using JobTracking.Application.Services;
 using JobTracking.DataAccess.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -25,11 +25,13 @@ namespace JobTracking.API
             // builder.AddCors();
             // builder.AddServices();
             
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<DTOs.JwtSettings>();
             var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey); 
             
             builder.Services.AddScoped<IOfferService, OfferService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IApplicationService, ApplicationService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             
             builder.Services.AddControllers();
@@ -55,7 +57,7 @@ namespace JobTracking.API
                     ClockSkew = TimeSpan.Zero
                 };
             });            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.Configure<DTOs.JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

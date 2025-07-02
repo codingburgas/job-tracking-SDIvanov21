@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using JobTracking.DataAccess.Data.Base;
 using JobTracking.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +22,10 @@ public class Application : IEntity
     public DateTime? UpdatedOn { get; set; }
     public string? UpdatedBy { get; set; }
     
+    [JsonIgnore]
     [Required]
     public User Applicant { get; set; }
+    [JsonIgnore]
     [Required]
     public Offer Offer { get; set; }
     
