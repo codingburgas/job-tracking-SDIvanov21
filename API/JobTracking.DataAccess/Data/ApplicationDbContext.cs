@@ -10,6 +10,19 @@ public class ApplicationDbContext : DbContext
     {
         
     }
+
+    public ApplicationDbContext()
+    {
+        
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+
+        if (!optionsBuilder.IsConfigured)
+            optionsBuilder.UseSqlite("Data Source=..\\JobTracking.DataAccess\\JobTrackingDB");
+    }
     
     public DbSet<Application> Applications { get; set; }
     public DbSet<Offer> Offers { get; set; }

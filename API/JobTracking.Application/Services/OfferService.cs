@@ -3,6 +3,7 @@ using JobTracking.DataAccess.Models;
 using Offer = JobTracking.DataAccess.Models.Offer;
 using OfferDTO = JobTracking.Domain.DTOs.Offer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace JobTracking.Application.Services
 {
@@ -18,68 +19,106 @@ namespace JobTracking.Application.Services
     public class OfferService : IOfferService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<OfferService> _logger;
 
-        public OfferService(ApplicationDbContext context)
+        public OfferService(ApplicationDbContext context, ILogger<OfferService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<List<Offer>> GetAllOffersAsync()
         {
-            return await _context.Set<Offer>()
-                .Include(o => o.Applications)
-                .ToListAsync();
+            try
+            {
+                return await _context.Set<Offer>()
+                    .Include(o => o.Applications)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all offers");
+                return new List<Offer>();
+            }
         }
 
         public async Task<Offer?> GetOfferByIdAsync(int id)
         {
-            return await _context.Set<Offer>()
-                .Include(o => o.Applications)
-                .FirstOrDefaultAsync(o => o.Id == id);
+            try
+            {
+                return await _context.Set<Offer>()
+                    .Include(o => o.Applications)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting offer by id {id}");
+                return null;
+            }
         }
 
         public async Task<Offer> CreateOfferAsync(OfferDTO offer, string username)
         {
-            var newOffer = new Offer
+            try
             {
-                CreatedOn = DateTime.Now,
-                CreatedBy = username,
-                IsActive = true,
-                Company = offer.Company,
-                Description = offer.Description,
-                Job = offer.Job,
-                Status = offer.Status
-            };
-            
-            _context.Set<Offer>().Add(newOffer);
-            await _context.SaveChangesAsync();
-            return newOffer;
+                var newOffer = new Offer
+                {
+                    CreatedOn = DateTime.Now,
+                    CreatedBy = username,
+                    IsActive = true,
+                    Company = offer.Company,
+                    Description = offer.Description,
+                    Job = offer.Job,
+                    Status = offer.Status
+                };
+                _context.Set<Offer>().Add(newOffer);
+                await _context.SaveChangesAsync();
+                return newOffer;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating offer");
+                return null;
+            }
         }
 
         public async Task<Offer?> UpdateOfferAsync(int id, OfferDTO updatedOffer, string username)
         {
-            var existing = await _context.Set<Offer>().FindAsync(id);
-            if (existing == null) return null;
-
-            existing.UpdatedOn = DateTime.UtcNow;
-            existing.UpdatedBy = username;
-            existing.Status = updatedOffer.Status;
-            existing.Description = updatedOffer.Description;
-            existing.Job = updatedOffer.Job;
-            existing.Company = updatedOffer.Company;
-
-            await _context.SaveChangesAsync();
-            return existing;
+            try
+            {
+                var existing = await _context.Set<Offer>().FindAsync(id);
+                if (existing == null) return null;
+                existing.UpdatedOn = DateTime.UtcNow;
+                existing.UpdatedBy = username;
+                existing.Status = updatedOffer.Status;
+                existing.Description = updatedOffer.Description;
+                existing.Job = updatedOffer.Job;
+                existing.Company = updatedOffer.Company;
+                await _context.SaveChangesAsync();
+                return existing;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating offer with id {id}");
+                return null;
+            }
         }
 
         public async Task<bool> DeleteOfferAsync(int id)
         {
-            var offer = await _context.Set<Offer>().FindAsync(id);
-            if (offer == null) return false;
-
-            _context.Set<Offer>().Remove(offer);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                var offer = await _context.Set<Offer>().FindAsync(id);
+                if (offer == null) return false;
+                _context.Set<Offer>().Remove(offer);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting offer with id {id}");
+                return false;
+            }
         }
     }
 }

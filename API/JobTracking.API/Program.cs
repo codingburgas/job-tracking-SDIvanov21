@@ -1,4 +1,3 @@
-
 using System.Text;
 using JobTracking.DataAccess.Data;
 using DTOs = JobTracking.Domain.DTOs;
@@ -35,7 +34,19 @@ namespace JobTracking.API
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("JobTracking"));
+            builder.Services.AddDbContext<ApplicationDbContext>();
+            
+            // Add CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularApp", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
             
             builder.Services.AddAuthentication(options =>
             {
@@ -61,6 +72,7 @@ namespace JobTracking.API
             
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddLogging();
 
             var app = builder.Build();
 
@@ -73,9 +85,14 @@ namespace JobTracking.API
 
             app.UseHttpsRedirection();
 
+            // Use CORS
+            app.UseCors("AllowAngularApp");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Add global exception handler middleware
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.MapControllers();
 

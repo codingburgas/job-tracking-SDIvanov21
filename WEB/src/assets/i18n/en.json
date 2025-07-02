@@ -1,4 +1,31 @@
 {
     "title": "Preslava",
-    "description": "Preslava is bulgarian pop folk singer, born in 1986. She is known for her unique voice and style."
+    "description": "Preslava is bulgarian pop folk singer, born in 1986. She is known for her unique voice and style.",
+    "LOGIN": {
+        "TITLE": "Login",
+        "USERNAME": "Username",
+        "PASSWORD": "Password",
+        "USERNAME_REQUIRED": "Username is required",
+        "PASSWORD_REQUIRED": "Password is required",
+        "SUBMIT": "Login",
+        "NO_ACCOUNT": "Don't have an account? Register"
+    },
+    "REGISTER": {
+        "TITLE": "Register",
+        "USERNAME": "Username",
+        "PASSWORD": "Password",
+        "CONFIRM_PASSWORD": "Confirm Password",
+        "FIRST_NAME": "First Name",
+        "SURNAME": "Surname",
+        "LAST_NAME": "Last Name",
+        "USERNAME_REQUIRED": "Username is required",
+        "PASSWORD_REQUIRED": "Password is required",
+        "CONFIRM_PASSWORD_REQUIRED": "Confirm password is required",
+        "PASSWORD_MISMATCH": "Passwords do not match",
+        "FIRST_NAME_REQUIRED": "First name is required",
+        "SURNAME_REQUIRED": "Surname is required",
+        "LAST_NAME_REQUIRED": "Last name is required",
+        "SUBMIT": "Register",
+        "HAVE_ACCOUNT": "Already have an account? Login"
+    }
 }

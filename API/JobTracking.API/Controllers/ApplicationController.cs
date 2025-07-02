@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationDTO = JobTracking.Domain.DTOs.Application;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace JobTracking.API.Controllers;
 
@@ -12,45 +14,86 @@ public class ApplicationController : ControllerBase
 {
     private readonly IApplicationService _applicationService;
     private readonly IUserService _userService;
+    private readonly ILogger<ApplicationController> _logger;
 
-    public ApplicationController(IApplicationService applicationService, IUserService userService)
+    public ApplicationController(IApplicationService applicationService, IUserService userService, ILogger<ApplicationController> logger)
     {
         _applicationService = applicationService;
         _userService = userService;
+        _logger = logger;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ApplicationDTO dto)
     {
-        var user = await _userService.GetUsersByNameAsync(User.Identity!.Name);
-        if (user == null || user.Id != dto.ApplicantId)
-            return Unauthorized();
-        
-        var result = await _applicationService.CreateApplicationAsync(dto);
-
-        if (!result.Success)
-            return BadRequest(result.Message);
-
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            // Extract applicantId from JWT claims
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id" || c.Type.EndsWith("/nameidentifier"));
+            if (userIdClaim == null)
+                return Unauthorized();
+            var applicantId = int.Parse(userIdClaim.Value);
+            // Build new DTO with only offerId, pass applicantId and status to service
+            var result = await _applicationService.CreateApplicationAsync(dto.OfferId, applicantId);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(new { message = result.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during application creation");
+            throw;
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var application = await _applicationService.GetApplicationByIdAsync(id);
-        if (application == null)
-            return NotFound("Application not found.");
-
-        return Ok(application);
+        try
+        {
+            var application = await _applicationService.GetApplicationByIdAsync(id);
+            if (application == null)
+                return NotFound("Application not found.");
+            return Ok(application);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error getting application with id {id}");
+            throw;
+        }
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _applicationService.DeleteApplicationAsync(id);
-        if (!result.Success)
-            return BadRequest(result.Message);
+        try
+        {
+            var result = await _applicationService.DeleteApplicationAsync(id);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(new { message = result.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting application with id {id}");
+            throw;
+        }
+    }
 
-        return Ok(result.Message);
+    [HttpGet("for-user/{userId}")]
+    public async Task<IActionResult> GetForUser(int userId)
+    {
+        try
+        {
+            var applications = await _applicationService.GetApplicationsByUserIdAsync(userId);
+            return Ok(applications);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error getting applications for user {userId}");
+            throw;
+        }
     }
 }
